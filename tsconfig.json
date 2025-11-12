@@ -2,20 +2,18 @@
   "compilerOptions": {
     /* Language and Environment */
     "target": "ES2022",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx",
+    "lib": ["ES2023"],
     
     /* Modules */
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "allowImportingTsExtensions": true,
     
     /* Emit */
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "noEmit": true,
+    "outDir": "./dist",
     
     /* Interop Constraints */
     "isolatedModules": true,
@@ -35,19 +33,8 @@
     
     /* Advanced Security */
     "skipLibCheck": true,
-    "useDefineForClassFields": true,
-    
-    /* Path Mapping for Clean Architecture */
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/presentation/*": ["./src/presentation/*"],
-      "@/domain/*": ["./src/domain/*"],
-      "@/data/*": ["./src/data/*"],
-      "@/core/*": ["./src/core/*"]
-    }
+    "useDefineForClassFields": true
   },
-  "include": ["src", "src/types"],
-  "exclude": ["node_modules", "dist", "build", "**/__tests__", "**/*.test.ts", "**/*.test.tsx"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src/generators/**/*", "src/analyzer/**/*", "src/utils.ts", "src/index.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/__tests__", "src/components", "src/core", "src/data", "src/domain", "src/features", "src/hooks", "src/presentation", "src/styles", "src/test", "src/types", "src/assets", "src/main.tsx"]
 }

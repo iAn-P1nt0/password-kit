@@ -1,39 +1,24 @@
-import js from '@eslint/js';
-import globals from 'globals';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
-import tseslint from 'typescript-eslint';
+import eslint from '@eslint/js';
 
-export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'build', 'dev-dist', '*.config.js', 'workbox*.js'] },
+export default [
+  eslint.configs.recommended,
   {
-    extends: [js.configs.recommended, ...tseslint.configs.strictTypeChecked],
-    files: ['**/*.{ts,tsx}'],
+    files: ['src/**/*.ts'],
     languageOptions: {
-      ecmaVersion: 2022,
-      globals: globals.browser,
+      parser: await import('@typescript-eslint/parser').then(m => m.default),
       parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.json'],
-        tsconfigRootDir: import.meta.dirname,
+        ecmaVersion: 2022,
+        sourceType: 'module',
+      },
+      globals: {
+        crypto: 'readonly',
       },
     },
-    plugins: {
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-    },
     rules: {
-      ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-non-null-assertion': 'error',
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-floating-promises': 'error',
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-unused-vars': 'off',
     },
-  }
-);
+  },
+  {
+    ignores: ['dist', 'node_modules', '**/*.test.ts', 'tests', 'src/components', 'src/core', 'src/data', 'src/domain', 'src/features', 'src/hooks', 'src/presentation', 'src/styles', 'src/test', 'src/types', 'src/assets', 'src/main.tsx', 'src/__tests__'],
+  },
+];

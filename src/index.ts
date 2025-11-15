@@ -61,6 +61,19 @@ export {
   type HashResult,
 } from './utils/argon2';
 
+// NIST 800-63B Policy Engine
+export {
+  validatePassword,
+  getDefaultPolicy,
+  createPolicy,
+  validatePasswordsBatch,
+  type PolicyConfig,
+  type PolicyResult,
+  type PolicyViolation,
+  type ValidationRule,
+  type ValidationContext,
+} from './analyzer/policy';
+
 // Utilities
 export {
   formatTOTPCode,

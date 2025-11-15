@@ -35,6 +35,6 @@
     "skipLibCheck": true,
     "useDefineForClassFields": true
   },
-  "include": ["src/generators/**/*", "src/analyzer/**/*", "src/utils.ts", "src/index.ts"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/__tests__", "src/components", "src/core", "src/data", "src/domain", "src/features", "src/hooks", "src/presentation", "src/styles", "src/test", "src/types", "src/assets", "src/main.tsx"]
+  "include": ["src/generators/**/*", "src/analyzer/**/*", "src/utils.ts", "src/utils/**/*", "src/index.ts", "src/types/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/__tests__", "src/components", "src/core", "src/data", "src/domain", "src/features", "src/hooks", "src/presentation", "src/styles", "src/test", "src/assets", "src/main.tsx"]
 }

@@ -47,6 +47,20 @@ export {
   type BreachCheckOptions,
 } from './analyzer/breach';
 
+// Password Hashing (Argon2id)
+export {
+  hashPassword,
+  verifyPassword,
+  getCapabilities,
+  getDefaultArgon2Options,
+  estimateHashingTime,
+  benchmarkHashing,
+  recommendOptions,
+  Argon2Type,
+  type Argon2Options,
+  type HashResult,
+} from './utils/argon2';
+
 // Utilities
 export {
   formatTOTPCode,

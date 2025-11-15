@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node',
+    environment: 'jsdom', // Changed from 'node' to support browser APIs
     include: ['tests/**/*.test.ts'],
     exclude: ['node_modules', 'dist', 'src/**/*.test.ts', 'src/**/*.test.tsx', 'src/__tests__/**/*'],
     coverage: {
@@ -17,5 +17,6 @@ export default defineConfig({
         '**/*.config.ts',
       ],
     },
+    testTimeout: 10000, // Increased timeout for Argon2
   },
 });

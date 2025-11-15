@@ -21,6 +21,9 @@ export default [
         AbortController: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
+        WebAssembly: 'readonly',
+        Worker: 'readonly',
+        performance: 'readonly',
       },
     },
     rules: {

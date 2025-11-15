@@ -53,6 +53,7 @@ out/
 # Testing & Coverage
 # ============================================================
 coverage/
+coverage-reports/
 .nyc_output/
 *.lcov
 .vitest/

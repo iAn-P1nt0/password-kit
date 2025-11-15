@@ -21,9 +21,12 @@
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "build:all": "./build-all.sh",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:all": "./test-all.sh",
+    "coverage:all": "./generate-coverage.sh",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
     "demo": "npm run build && python3 -m http.server 8000",

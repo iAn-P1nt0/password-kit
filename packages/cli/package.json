@@ -18,6 +18,7 @@
     "build": "tsup src/cli.ts src/index.ts --format esm --dts --clean && chmod +x dist/cli.js",
     "dev": "tsup src/cli.ts --format esm --watch",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "type-check": "tsc --noEmit"
   },
   "keywords": [

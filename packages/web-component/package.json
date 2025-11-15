@@ -23,6 +23,7 @@
     "dev": "tsup src/password-generator.ts --format esm --watch",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "type-check": "tsc --noEmit"
   },
   "keywords": [

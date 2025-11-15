@@ -53,8 +53,10 @@
     "@trustvault/password-utils": "file:../.."
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^14.1.2",
     "@types/react": "^18.2.45",
+    "@vitejs/plugin-react": "^5.1.1",
     "@vitest/coverage-v8": "^2.1.9",
     "jsdom": "^27.2.0",
     "react": "^18.2.0",

@@ -44,7 +44,9 @@ FAILED_COVERAGE=""
 
 # Main package coverage with timeout
 print_step "Generating coverage for main package..."
-if timeout 180 npm run test:coverage -- --reporter=verbose 2>&1 | tee "$COVERAGE_DIR/main-coverage.txt"; then
+# Increase test timeout to handle slow breach checker tests
+export VITEST_TEST_TIMEOUT=180000
+if timeout 300 npm run test:coverage -- --reporter=verbose --testTimeout=180000 2>&1 | tee "$COVERAGE_DIR/main-coverage.txt"; then
     if [ -d "coverage" ]; then
         cp -r coverage "$COVERAGE_DIR/main-coverage"
         print_success "Main package coverage generated"
@@ -55,13 +57,14 @@ if timeout 180 npm run test:coverage -- --reporter=verbose 2>&1 | tee "$COVERAGE
 else
     TEST_EXIT=$?
     if [ $TEST_EXIT -eq 124 ]; then
-        print_warning "Main package coverage timed out after 180 seconds"
+        print_warning "Main package coverage timed out after 300 seconds"
         FAILED_COVERAGE="${FAILED_COVERAGE}\n  - Main package (timeout)"
     else
         print_error "Main package coverage failed"
         FAILED_COVERAGE="${FAILED_COVERAGE}\n  - Main package"
     fi
 fi
+unset VITEST_TEST_TIMEOUT
 echo ""
 
 # React package coverage

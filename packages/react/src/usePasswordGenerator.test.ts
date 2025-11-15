@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { usePasswordGenerator } from '../usePasswordGenerator';
+import { usePasswordGenerator } from './usePasswordGenerator';
 
 describe('usePasswordGenerator', () => {
   it('should initialize with empty password', () => {

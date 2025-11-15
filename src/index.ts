@@ -87,6 +87,19 @@ export {
   type UnicodePasswordResult,
 } from './generators/unicode';
 
+// Password Expiry Estimator
+export {
+  calculateExpiry,
+  shouldRotateNow,
+  getRotationSchedule,
+  formatCrackCost,
+  calculateExpiryBatch,
+  type ExpiryOptions,
+  type ExpiryEstimate,
+  type RiskProfile,
+  type HashAlgorithm,
+} from './analyzer/expiry';
+
 // Utilities
 export {
   formatTOTPCode,

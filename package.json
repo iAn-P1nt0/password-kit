@@ -26,6 +26,8 @@
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
+    "demo": "npm run build && python3 -m http.server 8000",
+    "demo:1": "npm run build && node examples/demo-breach-checker.js",
     "prepublishOnly": "npm run test && npm run build"
   },
   "keywords": [

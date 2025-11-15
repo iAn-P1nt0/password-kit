@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Argon2id Password Hashing Demo - TrustVault</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 900px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .section h2 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input[type="password"],
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: monospace;
+      transition: border-color 0.3s;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .toggle-password {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 8px;
+      cursor: pointer;
+      user-select: none;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .toggle-password input {
+      margin-right: 6px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .btn-success {
+      background: #4caf50;
+      color: white;
+    }
+
+    .result-box {
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .result-box.show {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-success {
+      background: #efe;
+      border: 2px solid #4caf50;
+    }
+
+    .result-error {
+      background: #fee;
+      border: 2px solid #f44336;
+    }
+
+    .result-info {
+      background: #e3f2fd;
+      border: 2px solid #2196f3;
+    }
+
+    .result-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .result-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .result-message {
+      color: #666;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .result-details {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      font-size: 13px;
+      color: #666;
+    }
+
+    .result-details div {
+      margin-bottom: 4px;
+      font-family: monospace;
+    }
+
+    .loading {
+      text-align: center;
+      color: #667eea;
+      font-weight: 500;
+      padding: 20px;
+      display: none;
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .info-box {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 20px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .info-box h3 {
+      font-size: 15px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .info-box ul {
+      margin-left: 20px;
+      color: #666;
+    }
+
+    .info-box li {
+      margin-bottom: 4px;
+    }
+
+    .capabilities {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .capability {
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .capability-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .capability-status {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .capability-status.supported {
+      color: #4caf50;
+    }
+
+    .capability-status.unsupported {
+      color: #f44336;
+    }
+
+    .config-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .config-option {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .config-option label {
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .config-option input[type="number"] {
+      padding: 8px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .benchmark-result {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .benchmark-result.show {
+      display: block;
+    }
+
+    .benchmark-result h4 {
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    code {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+
+    .hash-display {
+      word-break: break-all;
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Argon2id Password Hashing Demo</h1>
+    <p class="subtitle">OWASP-compliant password hashing with Argon2id using Web Crypto API</p>
+
+    <!-- Capabilities Section -->
+    <div class="section">
+      <h2>System Capabilities</h2>
+      <div class="capabilities" id="capabilities">
+        <div class="capability">
+          <div class="capability-name">Loading...</div>
+          <div class="capability-status">Checking...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hash Password Section -->
+    <div class="section">
+      <h2>1. Hash Password</h2>
+
+      <div class="config-options">
+        <div class="config-option">
+          <label for="memory">Memory (KiB)</label>
+          <input type="number" id="memory" value="19456" min="8192" max="100000" step="1024">
+        </div>
+        <div class="config-option">
+          <label for="iterations">Iterations</label>
+          <input type="number" id="iterations" value="2" min="1" max="10">
+        </div>
+        <div class="config-option">
+          <label for="parallelism">Parallelism</label>
+          <input type="number" id="parallelism" value="1" min="1" max="4">
+        </div>
+        <div class="config-option">
+          <label for="hashLength">Hash Length</label>
+          <input type="number" id="hashLength" value="32" min="16" max="64">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="password-to-hash">Password to Hash</label>
+        <input
+          type="password"
+          id="password-to-hash"
+          placeholder="Enter password to hash..."
+          autocomplete="off"
+        />
+        <label class="toggle-password">
+          <input type="checkbox" id="show-password-hash">
+          Show password
+        </label>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" id="hash-btn">
+          Hash Password
+        </button>
+        <button class="btn-secondary" id="benchmark-btn">
+          Run Benchmark
+        </button>
+      </div>
+
+      <div id="hash-loading" class="loading">
+        <span class="spinner"></span>
+        <span id="hash-loading-text">Hashing password...</span>
+      </div>
+
+      <div id="hash-result" class="result-box"></div>
+      <div id="benchmark-result" class="benchmark-result"></div>
+    </div>
+
+    <!-- Verify Password Section -->
+    <div class="section">
+      <h2>2. Verify Password</h2>
+
+      <div class="input-group">
+        <label for="password-to-verify">Password</label>
+        <input
+          type="password"
+          id="password-to-verify"
+          placeholder="Enter password..."
+          autocomplete="off"
+        />
+        <label class="toggle-password">
+          <input type="checkbox" id="show-password-verify">
+          Show password
+        </label>
+      </div>
+
+      <div class="input-group">
+        <label for="hash-to-verify">Encoded Hash (from step 1)</label>
+        <textarea
+          id="hash-to-verify"
+          placeholder="Paste encoded hash here..."
+          rows="3"
+        ></textarea>
+      </div>
+
+      <button class="btn-primary" id="verify-btn">
+        Verify Password
+      </button>
+
+      <div id="verify-loading" class="loading">
+        <span class="spinner"></span>
+        Verifying password...
+      </div>
+
+      <div id="verify-result" class="result-box"></div>
+    </div>
+
+    <!-- Complete Flow Example -->
+    <div class="section">
+      <h2>3. Complete Registration Flow</h2>
+
+      <div class="input-group">
+        <label for="register-password">User Password</label>
+        <input
+          type="password"
+          id="register-password"
+          placeholder="Enter new password..."
+          autocomplete="off"
+        />
+      </div>
+
+      <button class="btn-success" id="register-btn">
+        Simulate Registration
+      </button>
+
+      <div id="register-loading" class="loading">
+        <span class="spinner"></span>
+        Processing registration...
+      </div>
+
+      <div id="register-result" class="result-box"></div>
+    </div>
+
+    <!-- Information Boxes -->
+    <div class="info-box">
+      <h3>🔐 Security Features</h3>
+      <ul>
+        <li><strong>Argon2id</strong> - Winner of Password Hashing Competition (2015)</li>
+        <li><strong>Memory-hard</strong> - Resistant to GPU/ASIC attacks</li>
+        <li><strong>OWASP Compliant</strong> - Follows latest 2023 recommendations</li>
+        <li><strong>Side-channel resistant</strong> - Constant-time verification</li>
+        <li><strong>Cryptographically secure</strong> - Uses Web Crypto API for salt generation</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <h3>⚙️ Default Parameters (OWASP 2023)</h3>
+      <ul>
+        <li><strong>Memory:</strong> 19,456 KiB (19 MiB minimum)</li>
+        <li><strong>Iterations:</strong> 2 (minimum time cost)</li>
+        <li><strong>Parallelism:</strong> 1 (optimal for web)</li>
+        <li><strong>Hash Length:</strong> 32 bytes (256 bits)</li>
+        <li><strong>Salt Length:</strong> 16 bytes (128 bits, auto-generated)</li>
+        <li><strong>Expected Time:</strong> 150-300ms on modern devices</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <h3>📊 Performance Notes</h3>
+      <ul>
+        <li>Higher memory = more resistant to attacks, but slower</li>
+        <li>More iterations = more secure, but slower login</li>
+        <li>Target: 200-500ms for good UX and security balance</li>
+        <li>Adjust parameters based on your threat model and user device capabilities</li>
+      </ul>
+    </div>
+  </div>
+
+  <script type="module">
+    // Import Argon2 functions
+    import {
+      hashPassword,
+      verifyPassword,
+      getCapabilities,
+      getDefaultArgon2Options,
+      estimateHashingTime,
+      benchmarkHashing,
+    } from '../dist/index.js';
+
+    // State
+    let lastHashedPassword = null;
+    let lastEncodedHash = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCapabilities();
+      setupEventListeners();
+    });
+
+    // Load and display capabilities
+    async function loadCapabilities() {
+      const caps = getCapabilities();
+      const capsContainer = document.getElementById('capabilities');
+
+      capsContainer.innerHTML = `
+        <div class="capability">
+          <div class="capability-name">WebAssembly</div>
+          <div class="capability-status ${caps.wasm ? 'supported' : 'unsupported'}">
+            ${caps.wasm ? '✓ Supported' : '✗ Not Supported'}
+          </div>
+        </div>
+        <div class="capability">
+          <div class="capability-name">Web Workers</div>
+          <div class="capability-status ${caps.webWorker ? 'supported' : 'unsupported'}">
+            ${caps.webWorker ? '✓ Supported' : '✗ Not Supported'}
+          </div>
+        </div>
+        <div class="capability">
+          <div class="capability-name">Crypto API</div>
+          <div class="capability-status ${caps.crypto ? 'supported' : 'unsupported'}">
+            ${caps.crypto ? '✓ Supported' : '✗ Not Supported'}
+          </div>
+        </div>
+        <div class="capability">
+          <div class="capability-name">SIMD</div>
+          <div class="capability-status ${caps.simd ? 'supported' : 'unsupported'}">
+            ${caps.simd ? '✓ Supported' : '✗ Not Available'}
+          </div>
+        </div>
+      `;
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Toggle password visibility
+      document.getElementById('show-password-hash').addEventListener('change', (e) => {
+        document.getElementById('password-to-hash').type = e.target.checked ? 'text' : 'password';
+      });
+
+      document.getElementById('show-password-verify').addEventListener('change', (e) => {
+        document.getElementById('password-to-verify').type = e.target.checked ? 'text' : 'password';
+      });
+
+      // Hash button
+      document.getElementById('hash-btn').addEventListener('click', hashPasswordHandler);
+
+      // Benchmark button
+      document.getElementById('benchmark-btn').addEventListener('click', benchmarkHandler);
+
+      // Verify button
+      document.getElementById('verify-btn').addEventListener('click', verifyPasswordHandler);
+
+      // Register button
+      document.getElementById('register-btn').addEventListener('click', registerFlowHandler);
+
+      // Enter key handlers
+      document.getElementById('password-to-hash').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') hashPasswordHandler();
+      });
+
+      document.getElementById('password-to-verify').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') verifyPasswordHandler();
+      });
+    }
+
+    // Hash password handler
+    async function hashPasswordHandler() {
+      const password = document.getElementById('password-to-hash').value;
+      const memory = parseInt(document.getElementById('memory').value);
+      const iterations = parseInt(document.getElementById('iterations').value);
+      const parallelism = parseInt(document.getElementById('parallelism').value);
+      const hashLength = parseInt(document.getElementById('hashLength').value);
+
+      if (!password) {
+        showResult('hash-result', {
+          type: 'error',
+          icon: '⚠️',
+          title: 'No Password',
+          message: 'Please enter a password to hash.',
+        });
+        return;
+      }
+
+      const loadingEl = document.getElementById('hash-loading');
+      const resultEl = document.getElementById('hash-result');
+      const hashBtn = document.getElementById('hash-btn');
+
+      loadingEl.classList.add('show');
+      resultEl.classList.remove('show');
+      hashBtn.disabled = true;
+
+      try {
+        const startTime = performance.now();
+
+        const result = await hashPassword(password, {
+          memory,
+          iterations,
+          parallelism,
+          hashLength,
+        });
+
+        const duration = performance.now() - startTime;
+
+        // Store for verification
+        lastHashedPassword = password;
+        lastEncodedHash = result.encoded;
+
+        // Auto-fill verification section
+        document.getElementById('hash-to-verify').value = result.encoded;
+
+        showResult('hash-result', {
+          type: 'success',
+          icon: '✓',
+          title: 'Password Hashed Successfully',
+          message: 'Your password has been hashed using Argon2id.',
+          details: {
+            'Algorithm': 'Argon2id',
+            'Hash Time': `${Math.round(duration)}ms`,
+            'Memory Used': `${(memory / 1024).toFixed(1)} MiB`,
+            'Iterations': iterations,
+            'Salt': bytesToHex(result.salt).substring(0, 16) + '...',
+            'Hash': bytesToHex(result.hash).substring(0, 32) + '...',
+          },
+          hash: result.encoded,
+        });
+      } catch (error) {
+        showResult('hash-result', {
+          type: 'error',
+          icon: '✗',
+          title: 'Hashing Failed',
+          message: `Error: ${error.message}`,
+        });
+      } finally {
+        loadingEl.classList.remove('show');
+        hashBtn.disabled = false;
+      }
+    }
+
+    // Benchmark handler
+    async function benchmarkHandler() {
+      const memory = parseInt(document.getElementById('memory').value);
+      const iterations = parseInt(document.getElementById('iterations').value);
+
+      const loadingEl = document.getElementById('hash-loading');
+      const loadingText = document.getElementById('hash-loading-text');
+      const benchmarkResultEl = document.getElementById('benchmark-result');
+      const benchmarkBtn = document.getElementById('benchmark-btn');
+
+      loadingText.textContent = 'Running benchmark (3 iterations)...';
+      loadingEl.classList.add('show');
+      benchmarkBtn.disabled = true;
+
+      try {
+        const avgTime = await benchmarkHashing({ memory, iterations }, 3);
+
+        benchmarkResultEl.innerHTML = `
+          <h4>Benchmark Results</h4>
+          <div>Average hashing time: <strong>${Math.round(avgTime)}ms</strong></div>
+          <div>Configuration: ${(memory / 1024).toFixed(1)} MiB, ${iterations} iterations</div>
+          <div style="margin-top: 8px; color: #666; font-size: 12px;">
+            ${avgTime < 200 ? '⚡ Very Fast - Consider increasing security parameters' :
+              avgTime < 500 ? '✓ Good - Balanced security and UX' :
+              avgTime < 1000 ? '⚠️ Slow - May impact user experience' :
+              '❌ Too Slow - Consider reducing parameters'}
+          </div>
+        `;
+        benchmarkResultEl.classList.add('show');
+      } catch (error) {
+        benchmarkResultEl.innerHTML = `
+          <h4>Benchmark Failed</h4>
+          <div>Error: ${error.message}</div>
+        `;
+        benchmarkResultEl.classList.add('show');
+      } finally {
+        loadingEl.classList.remove('show');
+        loadingText.textContent = 'Hashing password...';
+        benchmarkBtn.disabled = false;
+      }
+    }
+
+    // Verify password handler
+    async function verifyPasswordHandler() {
+      const password = document.getElementById('password-to-verify').value;
+      const encoded = document.getElementById('hash-to-verify').value.trim();
+
+      if (!password) {
+        showResult('verify-result', {
+          type: 'error',
+          icon: '⚠️',
+          title: 'No Password',
+          message: 'Please enter a password to verify.',
+        });
+        return;
+      }
+
+      if (!encoded) {
+        showResult('verify-result', {
+          type: 'error',
+          icon: '⚠️',
+          title: 'No Hash',
+          message: 'Please enter or generate a hash to verify against.',
+        });
+        return;
+      }
+
+      const loadingEl = document.getElementById('verify-loading');
+      const resultEl = document.getElementById('verify-result');
+      const verifyBtn = document.getElementById('verify-btn');
+
+      loadingEl.classList.add('show');
+      resultEl.classList.remove('show');
+      verifyBtn.disabled = true;
+
+      try {
+        const startTime = performance.now();
+        const isValid = await verifyPassword(password, encoded);
+        const duration = performance.now() - startTime;
+
+        if (isValid) {
+          showResult('verify-result', {
+            type: 'success',
+            icon: '✓',
+            title: 'Password Verified!',
+            message: 'The password matches the stored hash.',
+            details: {
+              'Verification Time': `${Math.round(duration)}ms`,
+              'Result': 'Match',
+            },
+          });
+        } else {
+          showResult('verify-result', {
+            type: 'error',
+            icon: '✗',
+            title: 'Verification Failed',
+            message: 'The password does not match the stored hash.',
+            details: {
+              'Verification Time': `${Math.round(duration)}ms`,
+              'Result': 'No Match',
+            },
+          });
+        }
+      } catch (error) {
+        showResult('verify-result', {
+          type: 'error',
+          icon: '✗',
+          title: 'Verification Error',
+          message: `Error: ${error.message}`,
+        });
+      } finally {
+        loadingEl.classList.remove('show');
+        verifyBtn.disabled = false;
+      }
+    }
+
+    // Registration flow handler
+    async function registerFlowHandler() {
+      const password = document.getElementById('register-password').value;
+
+      if (!password) {
+        showResult('register-result', {
+          type: 'error',
+          icon: '⚠️',
+          title: 'No Password',
+          message: 'Please enter a password.',
+        });
+        return;
+      }
+
+      const loadingEl = document.getElementById('register-loading');
+      const resultEl = document.getElementById('register-result');
+      const registerBtn = document.getElementById('register-btn');
+
+      loadingEl.classList.add('show');
+      resultEl.classList.remove('show');
+      registerBtn.disabled = true;
+
+      try {
+        // Step 1: Hash password
+        const hashResult = await hashPassword(password);
+
+        // Step 2: Simulate storing in database
+        const storedHash = hashResult.encoded;
+
+        // Step 3: Simulate login verification
+        const isValid = await verifyPassword(password, storedHash);
+
+        showResult('register-result', {
+          type: 'success',
+          icon: '✓',
+          title: 'Registration Complete!',
+          message: `User registered and verified successfully. The hashed password would be stored in your database.`,
+          details: {
+            'Step 1': 'Password hashed with Argon2id',
+            'Step 2': 'Hash stored (simulated)',
+            'Step 3': `Login verified: ${isValid ? 'Success' : 'Failed'}`,
+          },
+          hash: storedHash,
+        });
+      } catch (error) {
+        showResult('register-result', {
+          type: 'error',
+          icon: '✗',
+          title: 'Registration Failed',
+          message: `Error: ${error.message}`,
+        });
+      } finally {
+        loadingEl.classList.remove('show');
+        registerBtn.disabled = false;
+      }
+    }
+
+    // Helper to show results
+    function showResult(elementId, { type, icon, title, message, details, hash }) {
+      const detailsHtml = details
+        ? `<div class="result-details">
+             ${Object.entries(details).map(([key, value]) =>
+               `<div><strong>${key}:</strong> ${value}</div>`
+             ).join('')}
+           </div>`
+        : '';
+
+      const hashHtml = hash
+        ? `<div class="hash-display">${hash}</div>`
+        : '';
+
+      const resultEl = document.getElementById(elementId);
+      resultEl.className = `result-box result-${type} show`;
+      resultEl.innerHTML = `
+        <div class="result-icon">${icon}</div>
+        <div class="result-title">${title}</div>
+        <div class="result-message">${message}</div>
+        ${detailsHtml}
+        ${hashHtml}
+      `;
+    }
+
+    // Helper to convert bytes to hex
+    function bytesToHex(bytes) {
+      return Array.from(bytes)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    }
+
+    // Log loaded
+    console.log('Argon2 Demo loaded');
+    console.log('Try hashing a password with the default OWASP parameters!');
+  </script>
+</body>
+</html>

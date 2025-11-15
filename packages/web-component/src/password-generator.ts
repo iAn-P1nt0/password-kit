@@ -13,7 +13,7 @@
  * ```
  */
 
-import { generatePassword, type PasswordOptions } from '@trustvault/password-utils';
+import { generatePassword, type PasswordGeneratorOptions } from '@trustvault/password-utils';
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -338,7 +338,7 @@ template.innerHTML = `
  * Custom element for generating secure passwords with configurable options
  */
 export class PasswordGeneratorElement extends HTMLElement {
-  private shadowRoot: ShadowRoot;
+  private readonly root: ShadowRoot;
   private password: string = '';
 
   // Element references
@@ -355,6 +355,11 @@ export class PasswordGeneratorElement extends HTMLElement {
   private entropyDisplay!: HTMLSpanElement;
   private srAnnouncements!: HTMLDivElement;
 
+  private readonly onLengthInput: (event: Event) => void;
+  private readonly onGenerateClick: (event: MouseEvent) => void;
+  private readonly onCopyClick: (event: MouseEvent) => void;
+  private readonly onKeyDownHandler: (event: KeyboardEvent) => void;
+
   static get observedAttributes(): string[] {
     return [
       'length',
@@ -368,8 +373,13 @@ export class PasswordGeneratorElement extends HTMLElement {
 
   constructor() {
     super();
-    this.shadowRoot = this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.root = this.attachShadow({ mode: 'open' });
+    this.root.appendChild(template.content.cloneNode(true));
+
+    this.onLengthInput = this.handleLengthChange.bind(this);
+    this.onGenerateClick = this.generate.bind(this);
+    this.onCopyClick = this.copyToClipboard.bind(this);
+    this.onKeyDownHandler = this.handleKeyDown.bind(this);
   }
 
   connectedCallback(): void {
@@ -388,41 +398,41 @@ export class PasswordGeneratorElement extends HTMLElement {
     this.removeEventListeners();
   }
 
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
-    if (oldValue !== newValue && this.shadowRoot) {
+  public attributeChangedCallback(_name: string, oldValue: string | null, newValue: string | null): void {
+    if (oldValue !== newValue) {
       this.syncAttributesToUI();
     }
   }
 
   private initializeElements(): void {
-    this.passwordOutput = this.shadowRoot.getElementById('password-output') as HTMLInputElement;
-    this.lengthSlider = this.shadowRoot.getElementById('length-slider') as HTMLInputElement;
-    this.lengthValue = this.shadowRoot.getElementById('length-value') as HTMLSpanElement;
-    this.uppercaseCheckbox = this.shadowRoot.getElementById('uppercase') as HTMLInputElement;
-    this.lowercaseCheckbox = this.shadowRoot.getElementById('lowercase') as HTMLInputElement;
-    this.numbersCheckbox = this.shadowRoot.getElementById('numbers') as HTMLInputElement;
-    this.symbolsCheckbox = this.shadowRoot.getElementById('symbols') as HTMLInputElement;
-    this.generateBtn = this.shadowRoot.getElementById('generate-btn') as HTMLButtonElement;
-    this.copyBtn = this.shadowRoot.getElementById('copy-btn') as HTMLButtonElement;
-    this.strengthDisplay = this.shadowRoot.getElementById('strength') as HTMLSpanElement;
-    this.entropyDisplay = this.shadowRoot.getElementById('entropy') as HTMLSpanElement;
-    this.srAnnouncements = this.shadowRoot.getElementById('sr-announcements') as HTMLDivElement;
+    this.passwordOutput = this.root.getElementById('password-output') as HTMLInputElement;
+    this.lengthSlider = this.root.getElementById('length-slider') as HTMLInputElement;
+    this.lengthValue = this.root.getElementById('length-value') as HTMLSpanElement;
+    this.uppercaseCheckbox = this.root.getElementById('uppercase') as HTMLInputElement;
+    this.lowercaseCheckbox = this.root.getElementById('lowercase') as HTMLInputElement;
+    this.numbersCheckbox = this.root.getElementById('numbers') as HTMLInputElement;
+    this.symbolsCheckbox = this.root.getElementById('symbols') as HTMLInputElement;
+    this.generateBtn = this.root.getElementById('generate-btn') as HTMLButtonElement;
+    this.copyBtn = this.root.getElementById('copy-btn') as HTMLButtonElement;
+    this.strengthDisplay = this.root.getElementById('strength') as HTMLSpanElement;
+    this.entropyDisplay = this.root.getElementById('entropy') as HTMLSpanElement;
+    this.srAnnouncements = this.root.getElementById('sr-announcements') as HTMLDivElement;
   }
 
   private setupEventListeners(): void {
-    this.lengthSlider.addEventListener('input', this.handleLengthChange.bind(this));
-    this.generateBtn.addEventListener('click', this.generate.bind(this));
-    this.copyBtn.addEventListener('click', this.copyToClipboard.bind(this));
+    this.lengthSlider.addEventListener('input', this.onLengthInput);
+    this.generateBtn.addEventListener('click', this.onGenerateClick);
+    this.copyBtn.addEventListener('click', this.onCopyClick);
 
     // Keyboard shortcuts
-    this.addEventListener('keydown', this.handleKeyDown.bind(this));
+    this.addEventListener('keydown', this.onKeyDownHandler);
   }
 
   private removeEventListeners(): void {
-    this.lengthSlider.removeEventListener('input', this.handleLengthChange.bind(this));
-    this.generateBtn.removeEventListener('click', this.generate.bind(this));
-    this.copyBtn.removeEventListener('click', this.copyToClipboard.bind(this));
-    this.removeEventListener('keydown', this.handleKeyDown.bind(this));
+    this.lengthSlider.removeEventListener('input', this.onLengthInput);
+    this.generateBtn.removeEventListener('click', this.onGenerateClick);
+    this.copyBtn.removeEventListener('click', this.onCopyClick);
+    this.removeEventListener('keydown', this.onKeyDownHandler);
   }
 
   private handleLengthChange(e: Event): void {
@@ -446,25 +456,33 @@ export class PasswordGeneratorElement extends HTMLElement {
   }
 
   private syncAttributesToUI(): void {
+    if (!this.lengthSlider || !this.lengthValue) {
+      return;
+    }
+
     // Sync length
     const length = parseInt(this.getAttribute('length') ?? '16', 10);
     this.lengthSlider.value = String(length);
     this.lengthValue.textContent = String(length);
 
     // Sync checkboxes
+    if (!this.uppercaseCheckbox || !this.lowercaseCheckbox || !this.numbersCheckbox || !this.symbolsCheckbox) {
+      return;
+    }
     this.uppercaseCheckbox.checked = this.getAttribute('include-uppercase') !== 'false';
     this.lowercaseCheckbox.checked = this.getAttribute('include-lowercase') !== 'false';
     this.numbersCheckbox.checked = this.getAttribute('include-numbers') !== 'false';
     this.symbolsCheckbox.checked = this.getAttribute('include-symbols') !== 'false';
   }
 
-  private getOptions(): PasswordOptions {
+  private getOptions(): PasswordGeneratorOptions {
     return {
       length: parseInt(this.lengthSlider.value, 10),
       includeUppercase: this.uppercaseCheckbox.checked,
       includeLowercase: this.lowercaseCheckbox.checked,
       includeNumbers: this.numbersCheckbox.checked,
       includeSymbols: this.symbolsCheckbox.checked,
+      excludeAmbiguous: false,
     };
   }
 
@@ -500,7 +518,7 @@ export class PasswordGeneratorElement extends HTMLElement {
       // Dispatch custom event
       this.dispatchEvent(
         new CustomEvent('password-generated', {
-          detail: { password: this.password, ...result },
+          detail: { ...result },
           bubbles: true,
           composed: true,
         })

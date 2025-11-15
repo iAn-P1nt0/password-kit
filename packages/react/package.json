@@ -50,11 +50,10 @@
     "react": ">=16.8.0"
   },
   "dependencies": {
-    "@trustvault/password-utils": "^1.0.0"
+    "@trustvault/password-utils": "file:../.."
   },
   "devDependencies": {
     "@testing-library/react": "^14.1.2",
-    "@testing-library/react-hooks": "^8.0.1",
     "@types/react": "^18.2.45",
     "@vitest/coverage-v8": "^2.1.9",
     "jsdom": "^27.2.0",

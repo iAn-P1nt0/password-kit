@@ -24,10 +24,10 @@
  */
 
 import { useState, useCallback } from 'react';
-import { 
-  generatePassphrase, 
-  type PassphraseOptions, 
-  type PassphraseResult 
+import {
+  generatePassphrase,
+  type PassphraseOptions,
+  type GeneratedPassword,
 } from '@trustvault/password-utils';
 
 /**
@@ -39,9 +39,9 @@ export interface UsePassphraseGeneratorResult {
   /** Loading state during generation */
   loading: boolean;
   /** Full result object from last generation */
-  result: PassphraseResult | null;
+  result: GeneratedPassword | null;
   /** Generate new passphrase with optional override options */
-  generate: (options?: Partial<PassphraseOptions>) => Promise<PassphraseResult>;
+  generate: (options?: Partial<PassphraseOptions>) => Promise<GeneratedPassword>;
   /** Clear current passphrase */
   clear: () => void;
 }
@@ -60,8 +60,8 @@ export interface UsePassphraseGeneratorResult {
  * const { passphrase, generate, loading } = usePassphraseGenerator({
  *   wordCount: 6,
  *   separator: 'space',
- *   capitalization: 'first',
- *   includeNumber: true
+ *   capitalize: 'first',
+ *   includeNumbers: true
  * });
  * 
  * // Generate with default options
@@ -76,17 +76,19 @@ export function usePassphraseGenerator(
 ): UsePassphraseGeneratorResult {
   const [passphrase, setPassphrase] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<PassphraseResult | null>(null);
+  const [result, setResult] = useState<GeneratedPassword | null>(null);
 
   const generate = useCallback(
-    async (overrideOptions?: Partial<PassphraseOptions>): Promise<PassphraseResult> => {
+    async (
+      overrideOptions?: Partial<PassphraseOptions>
+    ): Promise<GeneratedPassword> => {
       setLoading(true);
       try {
         const options: PassphraseOptions = {
           wordCount: 4,
           separator: 'dash',
-          capitalization: 'none',
-          includeNumber: false,
+          capitalize: 'none',
+          includeNumbers: false,
           ...initialOptions,
           ...overrideOptions,
         };

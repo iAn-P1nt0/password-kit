@@ -41,7 +41,7 @@
   },
   "homepage": "https://github.com/iAn-P1nt0/TrustVault-password-utils#readme",
   "dependencies": {
-    "@trustvault/password-utils": "^1.0.0",
+    "@trustvault/password-utils": "file:../..",
     "chalk": "^5.3.0",
     "clipboardy": "^4.0.0",
     "commander": "^12.0.0",

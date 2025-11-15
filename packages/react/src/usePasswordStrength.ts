@@ -123,7 +123,7 @@ export function usePasswordStrength(
   // Preload zxcvbn on mount
   useEffect(() => {
     if (preload) {
-      preloadZxcvbn().catch(err => {
+      preloadZxcvbn().catch((err: unknown) => {
         console.warn('Failed to preload zxcvbn:', err);
       });
     }
@@ -158,7 +158,7 @@ export function usePasswordStrength(
             setLoading(false);
           }
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           if (!cancelledRef.current) {
             setError(err instanceof Error ? err : new Error(String(err)));
             setStrength(null);

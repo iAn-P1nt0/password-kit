@@ -24,10 +24,10 @@
  */
 
 import { useState, useCallback } from 'react';
-import { 
-  generatePassword, 
-  type PasswordOptions, 
-  type PasswordResult 
+import {
+  generatePassword,
+  type PasswordGeneratorOptions,
+  type GeneratedPassword,
 } from '@trustvault/password-utils';
 
 /**
@@ -39,9 +39,9 @@ export interface UsePasswordGeneratorResult {
   /** Loading state during generation */
   loading: boolean;
   /** Full result object from last generation */
-  result: PasswordResult | null;
+  result: GeneratedPassword | null;
   /** Generate new password with optional override options */
-  generate: (options?: Partial<PasswordOptions>) => Promise<PasswordResult>;
+  generate: (options?: Partial<PasswordGeneratorOptions>) => Promise<GeneratedPassword>;
   /** Clear current password */
   clear: () => void;
 }
@@ -74,22 +74,25 @@ export interface UsePasswordGeneratorResult {
  * ```
  */
 export function usePasswordGenerator(
-  initialOptions?: Partial<PasswordOptions>
+  initialOptions?: Partial<PasswordGeneratorOptions>
 ): UsePasswordGeneratorResult {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<PasswordResult | null>(null);
+  const [result, setResult] = useState<GeneratedPassword | null>(null);
 
   const generate = useCallback(
-    async (overrideOptions?: Partial<PasswordOptions>): Promise<PasswordResult> => {
+    async (
+      overrideOptions?: Partial<PasswordGeneratorOptions>
+    ): Promise<GeneratedPassword> => {
       setLoading(true);
       try {
-        const options: PasswordOptions = {
+        const options: PasswordGeneratorOptions = {
           length: 16,
           includeUppercase: true,
           includeLowercase: true,
           includeNumbers: true,
           includeSymbols: true,
+          excludeAmbiguous: false,
           ...initialOptions,
           ...overrideOptions,
         };

@@ -30,10 +30,9 @@ export {
 
 // Re-export types from core package for convenience
 export type {
-  PasswordOptions,
-  PasswordResult,
+  PasswordGeneratorOptions,
+  GeneratedPassword,
   PassphraseOptions,
-  PassphraseResult,
   PasswordStrengthResult,
   BreachResult,
 } from '@trustvault/password-utils';

@@ -50,24 +50,24 @@ const COMMON_PATTERNS = [
   /^(.)\1+$/, // Repeated characters
 ];
 
-/**
- * zxcvbn module cache
- * Stores the dynamically loaded zxcvbn module to avoid re-importing
- */
-let zxcvbnModule: typeof import('zxcvbn') | null = null;
+type ZxcvbnFn = (password: string, userInputs?: string[]) => import('zxcvbn').ZXCVBNResult;
 
 /**
- * Loading promise for zxcvbn
- * Ensures only one import is in flight at a time
+ * Cached zxcvbn function reference (avoids multiple dynamic imports)
  */
-let zxcvbnLoadingPromise: Promise<typeof import('zxcvbn')> | null = null;
+let zxcvbnModule: ZxcvbnFn | null = null;
+
+/**
+ * Loading promise for zxcvbn (ensures singleton import)
+ */
+let zxcvbnLoadingPromise: Promise<ZxcvbnFn> | null = null;
 
 /**
  * Lazy-load zxcvbn module
  * Uses dynamic import to defer loading until first use
  * Caches the loaded module for subsequent calls
  */
-async function loadZxcvbn(): Promise<typeof import('zxcvbn')> {
+async function loadZxcvbn(): Promise<ZxcvbnFn> {
   // Return cached module if available
   if (zxcvbnModule) {
     return zxcvbnModule;
@@ -80,9 +80,11 @@ async function loadZxcvbn(): Promise<typeof import('zxcvbn')> {
 
   // Start loading
   zxcvbnLoadingPromise = import('zxcvbn').then((module) => {
-    zxcvbnModule = module;
+    const resolvedModule: ZxcvbnFn =
+      typeof module === 'function' ? module : (module.default as ZxcvbnFn);
+    zxcvbnModule = resolvedModule;
     zxcvbnLoadingPromise = null;
-    return module;
+    return resolvedModule;
   });
 
   return zxcvbnLoadingPromise;
@@ -280,7 +282,7 @@ export async function analyzePasswordStrength(password: string): Promise<Passwor
   const zxcvbn = await loadZxcvbn();
 
   // Use zxcvbn for detailed analysis
-  const result = zxcvbn.default(password);
+  const result = zxcvbn(password);
 
   // Detect custom weaknesses
   const weaknesses: string[] = [

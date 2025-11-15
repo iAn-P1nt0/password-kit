@@ -7,7 +7,7 @@
  */
 
 import { Command } from 'commander';
-import chalk from 'chalk';
+import chalk, { ChalkInstance } from 'chalk';
 import clipboardy from 'clipboardy';
 import ora from 'ora';
 import {
@@ -16,6 +16,7 @@ import {
   analyzePasswordStrength,
   quickStrengthCheck,
   checkPasswordBreach,
+  type QuickStrengthResult,
 } from '@trustvault/password-utils';
 
 const program = new Command();
@@ -40,6 +41,7 @@ program
   .option('--no-lowercase', 'Exclude lowercase letters')
   .option('--no-numbers', 'Exclude numbers')
   .option('--no-symbols', 'Exclude symbols')
+  .option('--no-ambiguous', 'Exclude ambiguous characters (l, 1, O, 0, etc.)')
   .option('--no-copy', 'Do not copy to clipboard')
   .option('--json', 'Output as JSON')
   .option('-q, --quiet', 'Minimal output (password only)')
@@ -63,10 +65,11 @@ program
       for (let i = 0; i < count; i++) {
         const result = generatePassword({
           length,
-          includeUppercase: options.uppercase,
-          includeLowercase: options.lowercase,
-          includeNumbers: options.numbers,
-          includeSymbols: options.symbols,
+          includeUppercase: options.uppercase !== false,
+          includeLowercase: options.lowercase !== false,
+          includeNumbers: options.numbers !== false,
+          includeSymbols: options.symbols !== false,
+          excludeAmbiguous: options.ambiguous === false,
         });
 
         results.push(result);
@@ -130,7 +133,7 @@ program
   .description('Generate a memorable passphrase')
   .option('-w, --words <number>', 'Number of words (3-10)', '5')
   .option('-s, --separator <type>', 'Separator: dash, space, none', 'dash')
-  .option('-c, --capitalize <type>', 'Capitalize: none, first, all', 'first')
+  .option('-c, --capitalize <type>', 'Capitalize: none, first, all, random', 'first')
   .option('-n, --number', 'Include a random number')
   .option('--no-copy', 'Do not copy to clipboard')
   .option('--json', 'Output as JSON')
@@ -146,9 +149,9 @@ program
 
       const result = generatePassphrase({
         wordCount,
-        separator: options.separator as 'dash' | 'space' | 'none',
-        capitalization: options.capitalize as 'none' | 'first' | 'all',
-        includeNumber: options.number,
+        separator: options.separator as 'dash' | 'space' | 'symbol' | 'none',
+        capitalize: options.capitalize as 'none' | 'first' | 'all' | 'random',
+        includeNumbers: options.number === true,
       });
 
       if (!options.quiet && !options.json) {
@@ -281,7 +284,7 @@ program
       const strengthColor = getStrengthColor(result.strength);
       console.log(chalk.gray('Score:   '), strengthColor(`${result.score}/100`));
       console.log(chalk.gray('Strength:'), strengthColor(result.strength));
-      console.log(chalk.gray('Feedback:'), result.feedback);
+      console.log(chalk.gray('Feedback:'), getQuickFeedback(result));
       console.log();
 
     } catch (error) {
@@ -364,7 +367,7 @@ program
 /**
  * Helper function to get color for strength level
  */
-function getStrengthColor(strength: string): chalk.Chalk {
+function getStrengthColor(strength: string): ChalkInstance {
   switch (strength) {
     case 'weak':
       return chalk.red;
@@ -377,6 +380,22 @@ function getStrengthColor(strength: string): chalk.Chalk {
     default:
       return chalk.white;
   }
+}
+
+function getQuickFeedback(result: QuickStrengthResult): string {
+  if (result.score < 30) {
+    return 'Too short or predictable; add length and variety.';
+  }
+
+  if (result.score < 50) {
+    return 'Add uppercase, numbers, and symbols to strengthen it.';
+  }
+
+  if (result.score < 70) {
+    return 'Pretty good—consider a longer password for extra safety.';
+  }
+
+  return 'Excellent entropy for quick checks.';
 }
 
 // Parse arguments

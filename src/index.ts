@@ -28,6 +28,8 @@ export {
 // Strength Analysis
 export {
   analyzePasswordStrength,
+  preloadZxcvbn,
+  isZxcvbnLoaded,
   type PasswordStrengthResult,
 } from './analyzer/strength';
 

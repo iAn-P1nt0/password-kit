@@ -1,9 +1,12 @@
 /**
  * Password Strength Analyzer
- * Analyzes password strength using zxcvbn and custom checks
+ * Analyzes password strength using zxcvbn (lazy-loaded) and custom checks
+ *
+ * Performance Optimization:
+ * - zxcvbn is dynamically imported only when needed
+ * - Reduces initial bundle size by ~370 KB
+ * - First call triggers async load, subsequent calls use cached module
  */
-
-import zxcvbn from 'zxcvbn';
 
 /**
  * Detailed password strength analysis result
@@ -46,6 +49,68 @@ const COMMON_PATTERNS = [
   /master/i,
   /^(.)\1+$/, // Repeated characters
 ];
+
+/**
+ * zxcvbn module cache
+ * Stores the dynamically loaded zxcvbn module to avoid re-importing
+ */
+let zxcvbnModule: typeof import('zxcvbn') | null = null;
+
+/**
+ * Loading promise for zxcvbn
+ * Ensures only one import is in flight at a time
+ */
+let zxcvbnLoadingPromise: Promise<typeof import('zxcvbn')> | null = null;
+
+/**
+ * Lazy-load zxcvbn module
+ * Uses dynamic import to defer loading until first use
+ * Caches the loaded module for subsequent calls
+ */
+async function loadZxcvbn(): Promise<typeof import('zxcvbn')> {
+  // Return cached module if available
+  if (zxcvbnModule) {
+    return zxcvbnModule;
+  }
+
+  // Return in-flight promise if loading
+  if (zxcvbnLoadingPromise) {
+    return zxcvbnLoadingPromise;
+  }
+
+  // Start loading
+  zxcvbnLoadingPromise = import('zxcvbn').then((module) => {
+    zxcvbnModule = module;
+    zxcvbnLoadingPromise = null;
+    return module;
+  });
+
+  return zxcvbnLoadingPromise;
+}
+
+/**
+ * Check if zxcvbn is already loaded
+ * Useful for conditional logic or preloading
+ */
+export function isZxcvbnLoaded(): boolean {
+  return zxcvbnModule !== null;
+}
+
+/**
+ * Preload zxcvbn module
+ * Call this early (e.g., on page load, user focus) to avoid delay on first analysis
+ *
+ * @example
+ * ```typescript
+ * // Preload on password field focus
+ * passwordInput.addEventListener('focus', () => {
+ *   preloadZxcvbn();
+ * });
+ * ```
+ */
+export async function preloadZxcvbn(): Promise<void> {
+  await loadZxcvbn();
+}
 
 /**
  * Check for common weak patterns
@@ -165,21 +230,37 @@ function determineStrength(score: number): 'weak' | 'medium' | 'strong' | 'very-
 }
 
 /**
- * Analyze password strength using zxcvbn and custom checks
- * 
+ * Analyze password strength using zxcvbn (lazy-loaded) and custom checks
+ *
+ * **Performance**: First call triggers async load of zxcvbn (~370 KB).
+ * Consider calling `preloadZxcvbn()` early to avoid delay.
+ *
  * @param password - Password to analyze
  * @returns Detailed strength analysis
- * 
+ *
  * @example
  * ```typescript
- * const result = analyzePasswordStrength('MyP@ssw0rd123');
+ * const result = await analyzePasswordStrength('MyP@ssw0rd123');
  * console.log(result.strength);      // "medium"
  * console.log(result.score);         // 55
  * console.log(result.crackTime);     // "3 hours"
  * console.log(result.feedback.suggestions); // ["Add more words", "Avoid dates"]
  * ```
+ *
+ * @example
+ * ```typescript
+ * // Preload for better UX
+ * passwordInput.addEventListener('focus', () => {
+ *   preloadZxcvbn(); // Load in background
+ * });
+ *
+ * passwordInput.addEventListener('input', async (e) => {
+ *   const result = await analyzePasswordStrength(e.target.value);
+ *   updateStrengthMeter(result);
+ * });
+ * ```
  */
-export function analyzePasswordStrength(password: string): PasswordStrengthResult {
+export async function analyzePasswordStrength(password: string): Promise<PasswordStrengthResult> {
   if (!password || password.length === 0) {
     return {
       score: 0,
@@ -195,8 +276,11 @@ export function analyzePasswordStrength(password: string): PasswordStrengthResul
     };
   }
 
+  // Lazy-load zxcvbn
+  const zxcvbn = await loadZxcvbn();
+
   // Use zxcvbn for detailed analysis
-  const result = zxcvbn(password);
+  const result = zxcvbn.default(password);
 
   // Detect custom weaknesses
   const weaknesses: string[] = [

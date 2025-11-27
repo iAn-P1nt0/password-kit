@@ -24,7 +24,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "web-component",
@@ -47,7 +48,7 @@
   },
   "homepage": "https://github.com/iAn-P1nt0/password-kit#readme",
   "dependencies": {
-    "password-kit": "file:../.."
+    "password-kit": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

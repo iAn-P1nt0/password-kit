@@ -50,7 +50,7 @@
     "react": ">=16.8.0"
   },
   "dependencies": {
-    "password-kit": "file:../.."
+    "password-kit": "^2.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

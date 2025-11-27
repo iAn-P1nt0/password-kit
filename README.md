@@ -142,14 +142,14 @@ function PasswordForm() {
 Install the Web Component package:
 
 ```bash
-npm install @iAn-P1nt0/password-generator-element
+npm install password-generator-element
 ```
 
 **Works with any framework or vanilla HTML:**
 
 ```html
 <script type="module">
-  import '@iAn-P1nt0/password-generator-element';
+  import 'password-generator-element';
 </script>
 
 <password-generator 
@@ -185,10 +185,10 @@ Install globally or use with npx:
 
 ```bash
 # Global install
-npm install -g @iAn-P1nt0/password-cli
+npm install -g password-cli
 
 # Or use with npx (no install required)
-npx @iAn-P1nt0/password-cli generate
+npx password-cli generate
 ```
 
 **Commands:**

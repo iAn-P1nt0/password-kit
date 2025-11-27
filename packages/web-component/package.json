@@ -1,5 +1,5 @@
 {
-  "name": "@trustvault/password-generator-element",
+  "name": "password-generator-element",
   "version": "1.0.0",
   "description": "Web Component for password generation - framework agnostic",
   "type": "module",

@@ -1,8 +1,8 @@
-# @trustvault/password-cli
+# password-cli
 
 🔐 Secure password generation from the command line
 
-[![npm version](https://img.shields.io/npm/v/@trustvault/password-cli.svg)](https://www.npmjs.com/package/@trustvault/password-cli)
+[![npm version](https://img.shields.io/npm/v/password-cli.svg)](https://www.npmjs.com/package/password-cli)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/iAn-P1nt0/password-kit/blob/main/LICENSE)
 
 Generate cryptographically secure passwords and passphrases directly from your terminal. Uses Web Crypto API for maximum security.
@@ -23,19 +23,19 @@ Generate cryptographically secure passwords and passphrases directly from your t
 ### Global Install
 
 ```bash
-npm install -g @trustvault/password-cli
+npm install -g password-cli
 ```
 
 ### Use with npx (No Install)
 
 ```bash
-npx @trustvault/password-cli generate
+npx password-cli generate
 ```
 
 ### Alias
 
 ```bash
-alias tvpg="npx @trustvault/password-cli"
+alias tvpg="npx password-cli"
 ```
 
 ## Quick Start
@@ -316,25 +316,25 @@ By default, generated passwords are automatically copied to clipboard:
 
 ```bash
 # ~/.bashrc or ~/.zshrc
-alias genpw="npx @trustvault/password-cli generate"
-alias genphrase="npx @trustvault/password-cli passphrase"
-alias checkpw="npx @trustvault/password-cli analyze"
+alias genpw="npx password-cli generate"
+alias genphrase="npx password-cli passphrase"
+alias checkpw="npx password-cli analyze"
 ```
 
 ### Fish Shell
 
 ```fish
 # ~/.config/fish/config.fish
-alias genpw "npx @trustvault/password-cli generate"
-alias genphrase "npx @trustvault/password-cli passphrase"
+alias genpw "npx password-cli generate"
+alias genphrase "npx password-cli passphrase"
 ```
 
 ### PowerShell
 
 ```powershell
 # $PROFILE
-function genpw { npx @trustvault/password-cli generate $args }
-function genphrase { npx @trustvault/password-cli passphrase $args }
+function genpw { npx password-cli generate $args }
+function genphrase { npx password-cli passphrase $args }
 ```
 
 ## Advanced Usage
@@ -501,14 +501,14 @@ export NO_COLOR=1
 chmod +x ./node_modules/.bin/tvpg
 
 # Or use npx
-npx @trustvault/password-cli generate
+npx password-cli generate
 ```
 
 ## Related Packages
 
 - [password-kit](https://www.npmjs.com/package/password-kit) - Core library
 - [password-kit-react](https://www.npmjs.com/package/password-kit-react) - React hooks
-- [@trustvault/password-generator-element](https://www.npmjs.com/package/@trustvault/password-generator-element) - Web component
+- [password-generator-element](https://www.npmjs.com/package/password-generator-element) - Web component
 
 ## Contributing
 

@@ -18,13 +18,13 @@ Successfully built all TrustVault Password Utils packages and created comprehens
    - Output: `packages/react/dist/` with CJS, ESM, and declarations
    - Size: ~7KB (CJS), ~6KB (ESM)
 
-3. **CLI Package** (@trustvault/password-cli)
+3. **CLI Package** (password-cli)
    - Status: ✅ Built successfully
    - Output: `packages/cli/dist/` with ESM and declarations
    - Executable: `dist/cli.js` (with proper permissions)
    - Size: ~11KB
 
-4. **Web Component Package** (@trustvault/password-generator-element)
+4. **Web Component Package** (password-generator-element)
    - Status: ✅ Built successfully
    - Output: `packages/web-component/dist/` with CJS, ESM (minified)
    - Size: ~11KB (ESM), ~12KB (CJS)

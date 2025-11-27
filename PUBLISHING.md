@@ -23,10 +23,14 @@ npm whoami
 
 ### 2. Package Scope Access
 
-This package uses the `@trustvault` scope. Ensure you have publishing rights:
+This package uses unscoped package names (published to the public registry):
 
-- **Organization member:** If `@trustvault` is an npm organization, you need to be added as a member with publish permissions
-- **Personal scope:** If this is your personal scope, you're automatically authorized
+- **password-kit** - Root package (public)
+- **password-kit-react** - React hooks package (public)
+- **password-cli** - CLI tool package (public)
+- **password-generator-element** - Web component package (public)
+
+All packages are published under your npm user account on the public registry.
 
 ### 3. Two-Factor Authentication (Recommended)
 
@@ -315,13 +319,13 @@ npm version major   # 1.0.0 → 2.0.0
 
 ## Alternative: GitHub Package Registry
 
-You can also publish to GitHub Package Registry:
+You can also publish to GitHub Package Registry (optional):
 
 ### 1. Configure .npmrc
 
-Create `.npmrc` in project root:
+Create `.npmrc` in project root if publishing scoped packages to GitHub:
 ```
-@trustvault:registry=https://npm.pkg.github.com
+@your-org:registry=https://npm.pkg.github.com
 ```
 
 ### 2. Authenticate
@@ -334,9 +338,10 @@ Use your GitHub username and personal access token.
 
 ### 3. Update package.json
 
+Only needed if publishing scoped packages to GitHub:
 ```json
 {
-  "name": "password-kit",
+  "name": "@your-org/package-name",
   "repository": {
     "type": "git",
     "url": "https://github.com/iAn-P1nt0/password-kit.git"
@@ -352,6 +357,8 @@ Use your GitHub username and personal access token.
 ```bash
 npm publish
 ```
+
+**Note:** Since password-kit uses unscoped packages, they will publish to the public npm registry by default.
 
 ---
 

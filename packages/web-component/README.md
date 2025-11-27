@@ -1,8 +1,8 @@
-# @trustvault/password-generator-element
+# password-generator-element
 
 Web Component for password generation - framework agnostic, works anywhere.
 
-[![npm version](https://img.shields.io/npm/v/@trustvault/password-generator-element.svg)](https://www.npmjs.com/package/@trustvault/password-generator-element)
+[![npm version](https://img.shields.io/npm/v/password-generator-element.svg)](https://www.npmjs.com/package/password-generator-element)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://github.com/iAn-P1nt0/password-kit/blob/main/LICENSE)
 
 ## Features
@@ -20,15 +20,15 @@ Web Component for password generation - framework agnostic, works anywhere.
 ## Installation
 
 ```bash
-npm install @trustvault/password-generator-element
+npm install password-generator-element
 ```
 
 ```bash
-yarn add @trustvault/password-generator-element
+yarn add password-generator-element
 ```
 
 ```bash
-pnpm add @trustvault/password-generator-element
+pnpm add password-generator-element
 ```
 
 ## Quick Start
@@ -40,7 +40,7 @@ pnpm add @trustvault/password-generator-element
 <html>
 <head>
   <script type="module">
-    import '@trustvault/password-generator-element';
+    import 'password-generator-element';
   </script>
 </head>
 <body>
@@ -65,7 +65,7 @@ pnpm add @trustvault/password-generator-element
 ### React
 
 ```tsx
-import '@trustvault/password-generator-element';
+import 'password-generator-element';
 
 function App() {
   const handleGenerated = (e: CustomEvent) => {
@@ -94,7 +94,7 @@ function App() {
 </template>
 
 <script setup>
-import '@trustvault/password-generator-element';
+import 'password-generator-element';
 
 const handleGenerated = (e) => {
   console.log('Password:', e.detail.password);
@@ -107,7 +107,7 @@ const handleGenerated = (e) => {
 ```typescript
 // app.module.ts
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import '@trustvault/password-generator-element';
+import 'password-generator-element';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -343,7 +343,7 @@ generator.addEventListener('click', () => {
 Full TypeScript definitions included:
 
 ```typescript
-import type { PasswordGeneratorElement } from '@trustvault/password-generator-element';
+import type { PasswordGeneratorElement } from 'password-generator-element';
 
 const generator = document.querySelector('password-generator') as PasswordGeneratorElement;
 

@@ -70,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned for v1.4.0
 - React/Vue/Angular hooks (password-kit-react)
 - Web Component (<password-generator>)
-- CLI tool (@trustvault/password-cli)
+- CLI tool (password-cli)
 
 ---
 

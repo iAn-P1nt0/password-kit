@@ -104,7 +104,7 @@ function PasswordForm() {
 
 ### Phase 3.8: Web Component ✅
 
-**Package**: `@trustvault/password-generator-element`  
+**Package**: `password-generator-element`  
 **Location**: `/packages/web-component/`  
 **Tag Name**: `<password-generator>`
 
@@ -176,7 +176,7 @@ function PasswordForm() {
 
 ### Phase 3.9: CLI Tool ✅
 
-**Package**: `@trustvault/password-cli`  
+**Package**: `password-cli`  
 **Location**: `/packages/cli/`  
 **Binary**: `tvpg`, `trustvault-password`
 
@@ -256,10 +256,10 @@ function PasswordForm() {
 #### Installation:
 ```bash
 # Global install
-npm install -g @trustvault/password-cli
+npm install -g password-cli
 
 # Or use with npx (no install)
-npx @trustvault/password-cli generate
+npx password-cli generate
 ```
 
 #### Usage Examples:
@@ -355,14 +355,14 @@ password-kit/
 │   │   ├── vitest.config.ts
 │   │   └── README.md
 │   │
-│   ├── web-component/                  # @trustvault/password-generator-element
+│   ├── web-component/                  # password-generator-element
 │   │   ├── src/
 │   │   │   └── password-generator.ts
 │   │   ├── package.json
 │   │   ├── tsconfig.json
 │   │   └── README.md
 │   │
-│   └── cli/                            # @trustvault/password-cli
+│   └── cli/                            # password-cli
 │       ├── src/
 │       │   ├── cli.ts
 │       │   └── index.ts
@@ -391,12 +391,12 @@ password-kit/
 - Dependencies: react >=16.8.0
 - Size: ~5 KB (excluding peer deps)
 
-### 3. @trustvault/password-generator-element (new)
+### 3. password-generator-element (new)
 - Version: 1.0.0
 - Dependencies: None (framework-agnostic)
 - Size: ~8 KB gzipped
 
-### 4. @trustvault/password-cli (new)
+### 4. password-cli (new)
 - Version: 1.0.0
 - Dependencies: commander, chalk, clipboardy, ora
 - Binary: tvpg, trustvault-password

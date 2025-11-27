@@ -1,5 +1,5 @@
 /**
- * @trustvault/password-cli
+ * password-cli
  * 
  * Programmatic API for the CLI (for embedding in other tools)
  */

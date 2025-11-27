@@ -63,7 +63,7 @@ cd ../..
 echo ""
 
 # Build CLI package
-print_step "Building CLI package (@trustvault/password-cli)..."
+print_step "Building CLI package (password-cli)..."
 cd packages/cli
 if npm install --silent 2>&1 && npm run build 2>&1 | tee /tmp/cli-build.log; then
     print_success "CLI package built successfully"
@@ -76,7 +76,7 @@ cd ../..
 echo ""
 
 # Build Web Component package
-print_step "Building Web Component package (@trustvault/password-generator-element)..."
+print_step "Building Web Component package (password-generator-element)..."
 cd packages/web-component
 if npm install --silent 2>&1 && npm run build 2>&1 | tee /tmp/webcomponent-build.log; then
     print_success "Web Component package built successfully"

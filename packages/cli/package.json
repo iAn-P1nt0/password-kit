@@ -1,5 +1,5 @@
 {
-  "name": "@trustvault/password-cli",
+  "name": "password-cli",
   "version": "1.0.0",
   "description": "CLI tool for generating secure passwords and passphrases",
   "type": "module",
